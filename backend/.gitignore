@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual Environments
+venv/
+.venv/
+env/
+
+# Environment Variables
+.env
+.env.*
+
+# Logs
+logs/
+*.log
+
+# ML Models
+models/*.pkl
+models/*.joblib
+models/*.onnx
+models/*.h5
+models/*.pt
+models/*.pth
+
+# Keep placeholder
+!models/PUT_OFFICIAL_MODEL_HERE.md
+
+# Cache
+.pytest_cache/
+.mypy_cache/
+.coverage
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
