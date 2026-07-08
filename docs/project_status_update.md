@@ -1,45 +1,24 @@
 # Project Status Update
 
-## Milestone 1 — Data Security & Preprocessing
-- [x] Secure preprocessing pipeline implemented for PII masking and hashing.
-- [x] Audit logging added for compliance-related transformations.
-- [x] Secure dataset exported to data/processed/secure_dataset.csv.
-- [x] Synthetic customer profile augmentation added for training readiness.
+## Milestone 1 — Data security and preprocessing
+- [x] The notebook now loads the fraud dataset and prepares a privacy-preserving export.
+- [x] Sensitive identifier fields are encrypted with Fernet before the secure dataset is saved.
+- [x] EDA is performed for class balance, transaction-type behavior, outlier patterns, and feature correlation.
+- [x] The secure export is saved to data/processed/secure_dataset.csv.
 
-## Milestone 2 — Model Development & Risk Analysis
-- [x] Ensemble training workflow implemented with XGBoost, LightGBM, and CatBoost.
-- [x] Threshold tuning and PR-AUC/ROC-AUC evaluation included.
-- [x] Model artifacts stored with metadata for reproducibility.
-- [x] API inference path hardened to use the same feature contract as training.
+## Milestone 2 — Model development and risk analysis
+- [x] The notebook trains XGBoost, LightGBM, and CatBoost models.
+- [x] Feature engineering is applied to create numeric inputs for fraud classification.
+- [x] Model artifacts and metadata are saved under models for reproducibility.
+- [x] The workflow is structured for further API inference and deployment.
 
-## Milestone 3 — Secure Deployment
-- [x] FastAPI prediction service scaffolded for secure inference.
-- [x] API key protection and rate limiting added.
-- [x] CORS policy constrained through environment configuration.
-- [x] Audit logging integrated for prediction events.
-- [ ] Azure Key Vault integration should be finalized with managed identity and secret retrieval.
-- [ ] Environment-based secrets should be enforced in production deployments.
+## Milestone 3 — Secure deployment readiness
+- [x] The service layer in src/app.py is ready to consume the same feature contract used during training.
+- [x] The project includes environment-driven configuration and a basic testing path.
+- [ ] Production secret storage should be moved to Azure Key Vault or a similar managed store.
+- [ ] CI/CD automation and deployment checks should be added for repeatable releases.
 
-## Milestone 4 — MLOps & Audit Monitoring
-- [x] MLOps audit logging added for model load and prediction events.
-- [x] Model integrity hashing included at startup.
-- [ ] Immutable, centralized log storage and retention policies should be introduced.
-- [ ] CI/CD and deployment validation steps should be added.
-
-## Milestone 5 — Final Documentation & Presentation
-- [x] Core project documentation scaffolded.
-- [x] Security architecture and compliance ideas documented in the repository.
-- [ ] Final compliance report and demo presentation should be polished.
-
-## ENHANCED / UPDATED BY AI
-- Hardened the FastAPI inference path and removed unsafe secret handling.
-- Replaced legacy Pydantic validator usage with a version-compatible validator.
-- Added regression coverage for the feature vector helper.
-- Introduced environment-based configuration for origins, audit logs, and secrets.
-
-## NEXT ACTIONS
-1. Configure production secrets through Azure Key Vault or a managed secret store.
-2. Replace local development-only API key fallback with enforced environment validation.
-3. Add end-to-end smoke tests for the prediction endpoint.
-4. Add Azure deployment assets and CI/CD pipeline configuration.
-5. Prepare the final compliance report and architecture walkthrough.
+## Milestone 4 — Documentation and project readiness
+- [x] The documentation now reflects the current notebook workflow and dataset.
+- [x] Project notes explain the modeling stack, encryption flow, and output artifacts.
+- [ ] Final deployment documentation can be expanded with operational runbooks and monitoring guidance.
