@@ -403,7 +403,7 @@ Additional documentation files are available:
 
 ## Contributors
 
-* **Backend Engineering**: Senior Backend Developer & Cybersecurity Engineer
+* **Backend Engineering**: Backend Developer & Cybersecurity Engineer
 * **Machine Learning**: ML Scientist & Data Preprocessing Specialist
 * **Frontend Design**: Frontend Developer (Advisory UI)
 * **DevOps**: DevSecOps Engineer
