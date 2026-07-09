@@ -1,0 +1,83 @@
+.
+├── app
+│   ├── config.py
+│   ├── dependencies.py
+│   ├── __init__.py
+│   ├── main.py
+│   ├── middleware
+│   │   ├── cors.py
+│   │   ├── __init__.py
+│   │   ├── logging.py
+│   │   └── __pycache__
+│   │       ├── cors.cpython-313.pyc
+│   │       ├── __init__.cpython-313.pyc
+│   │       └── logging.cpython-313.pyc
+│   ├── __pycache__
+│   │   ├── config.cpython-313.pyc
+│   │   ├── dependencies.cpython-313.pyc
+│   │   ├── __init__.cpython-313.pyc
+│   │   └── main.cpython-313.pyc
+│   ├── routers
+│   │   ├── auth.py
+│   │   ├── health.py
+│   │   ├── __init__.py
+│   │   ├── predict.py
+│   │   └── __pycache__
+│   │       ├── auth.cpython-313.pyc
+│   │       ├── health.cpython-313.pyc
+│   │       ├── __init__.cpython-313.pyc
+│   │       └── predict.cpython-313.pyc
+│   ├── schemas
+│   │   ├── auth.py
+│   │   ├── __init__.py
+│   │   ├── prediction.py
+│   │   ├── __pycache__
+│   │   │   ├── auth.cpython-313.pyc
+│   │   │   ├── __init__.cpython-313.pyc
+│   │   │   └── prediction.cpython-313.pyc
+│   │   └── security.py
+│   ├── services
+│   │   ├── auth_service.py
+│   │   ├── azure_service.py
+│   │   ├── __init__.py
+│   │   ├── logging_service.py
+│   │   ├── model_service.py
+│   │   ├── preprocessing_service.py
+│   │   └── __pycache__
+│   │       ├── auth_service.cpython-313.pyc
+│   │       ├── __init__.cpython-313.pyc
+│   │       ├── logging_service.cpython-313.pyc
+│   │       ├── model_service.cpython-313.pyc
+│   │       └── preprocessing_service.cpython-313.pyc
+│   └── utils
+│       ├── __init__.py
+│       ├── limiter.py
+│       ├── __pycache__
+│       │   ├── __init__.cpython-313.pyc
+│       │   ├── limiter.cpython-313.pyc
+│       │   └── validators.cpython-313.pyc
+│       ├── security.py
+│       └── validators.py
+├── docker-compose.yml
+├── Dockerfile
+├── logs
+│   ├── app.log
+│   ├── audit.log
+│   ├── error.log
+│   └── security.log
+├── ML_MODEL_INTEGRATION_GUIDE.md
+├── models
+│   └── PUT_OFFICIAL_MODEL_HERE.md
+├── README.md
+├── requirements.txt
+├── scripts
+│   └── generate_dummy_models.py
+├── tests
+│   ├── __pycache__
+│   │   ├── test_azure.cpython-313-pytest-9.0.3.pyc
+│   │   └── test_backend.cpython-313-pytest-9.0.3.pyc
+│   ├── test_azure.py
+│   └── test_backend.py
+└── txt
+
+18 directories, 63 files

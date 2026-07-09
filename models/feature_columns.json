@@ -1,0 +1,24 @@
+{
+    "numerical_features": [
+        "age",
+        "income",
+        "transaction_amount",
+        "risk_score"
+    ],
+    "categorical_features": [
+        "department",
+        "user_role"
+    ],
+    "categories": {
+        "department": [
+            "finance",
+            "healthcare",
+            "other"
+        ],
+        "user_role": [
+            "admin",
+            "analyst",
+            "user"
+        ]
+    }
+}

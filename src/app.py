@@ -7,6 +7,7 @@ import pandas as pd
 import numpy as np
 from typing import Dict, List, Optional
 from datetime import datetime
+from contextlib import asynccontextmanager
 from pydantic import BaseModel, Field
 from fastapi import FastAPI, HTTPException, Request, Depends
 from fastapi.security.api_key import APIKeyHeader
@@ -51,10 +52,15 @@ mlops_logger = MLOpsLogger()
 
 # ========== FastAPI Setup & Hardening ==========
 limiter = Limiter(key_func=get_remote_address)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    yield
+
 app = FastAPI(
     title="Secure & Compliant Fraud Detection API",
     description="Production-hardened, compliant fraud detection prediction service with Azure Key Vault simulation.",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan,
 )
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
@@ -255,8 +261,8 @@ def get_file_hash(filepath: str) -> str:
             sha256.update(chunk)
     return sha256.hexdigest()
 
-@app.on_event("startup")
-def startup_event():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     global models, meta, customer_feature_store
     
     meta_path = 'models/ensemble_metadata.json'
@@ -313,6 +319,7 @@ def startup_event():
         print(f"Feature Store initialized with {len(customer_feature_store)} customer profiles.")
     else:
         print("Warning: secure_dataset.csv not found. Feature Store initialized empty.")
+    yield
 
 @app.post("/predict")
 @limiter.limit("60/minute")
