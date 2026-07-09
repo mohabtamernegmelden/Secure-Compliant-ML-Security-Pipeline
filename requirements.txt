@@ -16,3 +16,6 @@ slowapi>=0.1.9
 redis>=5.0.0
 pandas>=2.0.0
 xgboost>=2.0.0
+pytest
+pytest-asyncio
+httpx
