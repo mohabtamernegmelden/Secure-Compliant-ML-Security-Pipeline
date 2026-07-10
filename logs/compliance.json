@@ -1,0 +1,143 @@
+{
+  "model_changes": [
+    {
+      "timestamp": "2026-07-09T18:17:27.111272+00:00",
+      "action": "load",
+      "model_version": "1.0.0",
+      "actor": "test",
+      "details": {
+        "status": "ok"
+      }
+    },
+    {
+      "timestamp": "2026-07-09T18:18:39.765144+00:00",
+      "action": "load",
+      "model_version": "1.0.0",
+      "actor": "test",
+      "details": {
+        "status": "ok"
+      }
+    },
+    {
+      "timestamp": "2026-07-09T23:33:19.201385+00:00",
+      "action": "startup",
+      "model_version": "1.0.0",
+      "actor": "system",
+      "details": {
+        "status": "service_started",
+        "environment": "development"
+      }
+    },
+    {
+      "timestamp": "2026-07-10T03:57:03.548300+00:00",
+      "action": "startup",
+      "model_version": "1.0.0",
+      "actor": "system",
+      "details": {
+        "status": "service_started",
+        "environment": "development"
+      }
+    },
+    {
+      "timestamp": "2026-07-10T09:49:56.786624+00:00",
+      "action": "load",
+      "model_version": "1.0.0",
+      "actor": "test",
+      "details": {
+        "status": "ok"
+      }
+    },
+    {
+      "timestamp": "2026-07-10T12:03:53.649130+00:00",
+      "action": "load",
+      "model_version": "1.0.0",
+      "actor": "test",
+      "details": {
+        "status": "ok"
+      }
+    },
+    {
+      "timestamp": "2026-07-10T12:07:47.586773+00:00",
+      "action": "load",
+      "model_version": "1.0.0",
+      "actor": "test",
+      "details": {
+        "status": "ok"
+      }
+    },
+    {
+      "timestamp": "2026-07-10T12:08:37.847240+00:00",
+      "action": "load",
+      "model_version": "1.0.0",
+      "actor": "test",
+      "details": {
+        "status": "ok"
+      }
+    },
+    {
+      "timestamp": "2026-07-10T12:12:08.093727+00:00",
+      "action": "load",
+      "model_version": "1.0.0",
+      "actor": "test",
+      "details": {
+        "status": "ok"
+      }
+    },
+    {
+      "timestamp": "2026-07-10T12:12:33.645576+00:00",
+      "action": "load",
+      "model_version": "1.0.0",
+      "actor": "test",
+      "details": {
+        "status": "ok"
+      }
+    },
+    {
+      "timestamp": "2026-07-10T12:12:55.056960+00:00",
+      "action": "load",
+      "model_version": "1.0.0",
+      "actor": "test",
+      "details": {
+        "status": "ok"
+      }
+    },
+    {
+      "timestamp": "2026-07-10T12:15:56.247743+00:00",
+      "action": "load",
+      "model_version": "1.0.0",
+      "actor": "test",
+      "details": {
+        "status": "ok"
+      }
+    }
+  ],
+  "audit_events": [
+    {
+      "timestamp": "2026-07-09T18:18:39.752465+00:00",
+      "event": "compliance_check",
+      "user": "system",
+      "status": "success",
+      "details": {
+        "endpoint": "/compliance"
+      }
+    },
+    {
+      "timestamp": "2026-07-09T23:33:19.208363+00:00",
+      "event": "service_start",
+      "user": "system",
+      "status": "success",
+      "details": {
+        "environment": "development"
+      }
+    },
+    {
+      "timestamp": "2026-07-10T03:57:03.557174+00:00",
+      "event": "service_start",
+      "user": "system",
+      "status": "success",
+      "details": {
+        "environment": "development"
+      }
+    }
+  ]
+}

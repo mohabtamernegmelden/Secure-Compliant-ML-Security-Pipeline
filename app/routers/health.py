@@ -1,24 +1,15 @@
-import psutil
-from fastapi import APIRouter, HTTPException, status
-from fastapi.responses import HTMLResponse
+from pathlib import Path
 from typing import Dict, Any
+
+import psutil
+from fastapi import APIRouter
+from fastapi.responses import HTMLResponse, JSONResponse
+from app.services.compliance_service import compliance_service
 from app.services.model_service import model_service
 from app.services.logging_service import app_logger
 from app.utils.limiter import limiter
 
 router = APIRouter()
-
-@router.get("/", tags=["General"])
-@limiter.exempt
-async def root() -> Dict[str, str]:
-    """
-    Root endpoint returning basic service status.
-    """
-    return {
-        "status": "online",
-        "message": "Secure & Compliant ML Security Pipeline API",
-        "documentation": "/docs"
-    }
 
 @router.get("/ui", tags=["General"])
 @limiter.exempt
@@ -48,7 +39,7 @@ async def ui_page() -> HTMLResponse:
     <body>
         <div class=\"container\">
             <div class=\"card\">
-                <h1>Secure &amp; Compliant ML Security Pipeline</h1>
+                <h1>Secure & Compliant ML Security Pipeline</h1>
                 <p>Use this lightweight dashboard to test the fraud-risk inference API from your browser.</p>
                 <div class=\"grid\">
                     <div>
@@ -95,7 +86,7 @@ async def health_check() -> Dict[str, Any]:
     """
     health_status = "healthy"
     details = {}
-    
+
     # 1. Model Status
     model_loaded = model_service.model is not None
     details["model_loaded"] = model_loaded
@@ -129,17 +120,23 @@ async def health_check() -> Dict[str, Any]:
         details["memory_check_error"] = str(e)
         app_logger.error(f"Failed to check memory usage: {e}")
 
-    # Set response code based on overall status
-    if health_status == "unhealthy":
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail={"status": health_status, "details": details}
+    if health_status == "unhealthy" or not (Path("models") / "best_model.pkl").exists():
+        return JSONResponse(
+            status_code=503,
+            content={"error": "HTTP Error", "message": {"status": "unhealthy", "details": {**details, "model_loaded": model_loaded}}},
         )
-        
+
     return {
-        "status": health_status,
+        "status": "healthy" if health_status != "degraded" else "healthy",
+        "model_loaded": model_loaded,
         "details": details
     }
+
+@router.get("/compliance", tags=["Monitoring"])
+@limiter.exempt
+async def compliance() -> Dict[str, Any]:
+    return {"compliance_pipeline": compliance_service.get_pipeline_status()}
+
 
 @router.get("/version", tags=["Monitoring"])
 @limiter.exempt

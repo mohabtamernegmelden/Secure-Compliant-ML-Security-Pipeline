@@ -1,54 +1,29 @@
-# Multi-stage build to keep size small and secure
-FROM python:3.12-slim AS builder
+﻿# syntax=docker/dockerfile:1.7
+FROM node:20-alpine AS frontend-builder
+WORKDIR /workspace/frontend
+COPY frontend/package*.json ./
+COPY frontend/index.html ./index.html
+COPY frontend/vite.config.js ./vite.config.js
+COPY frontend/src ./src
+RUN npm install --no-audit --no-fund
+RUN npm run build
 
-WORKDIR /build
-
-# Install compilation dependencies if needed
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy requirements
-COPY requirements.txt .
-
-# Install dependencies into a wheels directory
-RUN pip install --no-cache-dir --user -r requirements.txt
-
-
-# Final stage
-FROM python:3.12-slim AS runner
-
-WORKDIR /app
-
-# Set environment variables
+FROM python:3.11-slim AS runtime
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PATH="/home/mluser/.local/bin:${PATH}" \
+    PORT=8000 \
     ENVIRONMENT=production
-
-# Create non-root system group and user
-RUN groupadd -g 10001 mlgroup && \
-    useradd -u 10001 -g mlgroup -m -s /bin/bash mluser
-
-# Copy wheels/installed libraries from builder stage
-COPY --from=builder /root/.local /home/mluser/.local
-
-# Copy application source code
-COPY --chown=mluser:mlgroup app/ /app/app/
-COPY --chown=mluser:mlgroup models/ /app/models/
-
-# Ensure logs directory exists and is owned by non-root user
-RUN mkdir -p /app/logs && chown -m -R mluser:mlgroup /app
-
-# Switch to non-privileged user
-USER mluser
-
-# Expose port
+WORKDIR /app
+RUN groupadd --system app && useradd --system --gid app --create-home appuser
+RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
+COPY requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+COPY app ./app
+COPY models ./models
+COPY static ./static
+COPY --from=frontend-builder /workspace/static ./static
+RUN mkdir -p /app/logs && chown -R appuser:app /app
+USER appuser
 EXPOSE 8000
-
-# Health check instructions for container runtime
-HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" || exit 1
-
-# Start FastAPI application with Uvicorn
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2", "--log-level", "info"]
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 CMD curl -fsS http://127.0.0.1:${PORT:-8000}/health || exit 1
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT}"]

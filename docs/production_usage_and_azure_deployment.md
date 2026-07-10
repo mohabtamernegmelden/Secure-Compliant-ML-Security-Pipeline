@@ -139,8 +139,10 @@ az group create --name rg-secure-ml --location eastus
 ### 2. Create an Azure Container Registry
 
 ```powershell
-az acr create --resource-group rg-secure-ml --name <acrname> --sku Basic --admin-enabled true
+az acr create --resource-group rg-secure-ml --name <acrname> --sku Premium --admin-enabled true
 ```
+
+> Note: Some Azure regions do not support the Basic or Standard ACR tiers. Use `Premium` if the lower tiers are not available.
 
 ### 3. Build and push the container image
 

@@ -1,24 +1,22 @@
 {
-    "numerical_features": [
-        "age",
-        "income",
-        "transaction_amount",
-        "risk_score"
-    ],
-    "categorical_features": [
-        "department",
-        "user_role"
-    ],
-    "categories": {
-        "department": [
-            "finance",
-            "healthcare",
-            "other"
-        ],
-        "user_role": [
-            "admin",
-            "analyst",
-            "user"
-        ]
-    }
+  "numerical_features": [
+    "step",
+    "amount",
+    "oldbalanceOrg",
+    "newbalanceOrig",
+    "oldbalanceDest",
+    "newbalanceDest"
+  ],
+  "categorical_features": [
+    "type"
+  ],
+  "categories": {
+    "type": [
+      "PAYMENT",
+      "CASH_IN",
+      "CASH_OUT",
+      "DEBIT",
+      "TRANSFER"
+    ]
+  }
 }

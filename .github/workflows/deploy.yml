@@ -1,0 +1,141 @@
+name: Deploy to Azure
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'iac/**'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+          - development
+
+env:
+  AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    environment:
+      name: ${{ github.event.inputs.environment || 'production' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Set environment variables
+        id: vars
+        run: |
+          if [ "${{ github.event.inputs.environment }}" = "production" ]; then
+            echo "env_name=prod" >> $GITHUB_OUTPUT
+            echo "resource_group=rg-fraud-detection-prod" >> $GITHUB_OUTPUT
+            echo "location=eastus" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event.inputs.environment }}" = "staging" ]; then
+            echo "env_name=staging" >> $GITHUB_OUTPUT
+            echo "resource_group=rg-fraud-detection-staging" >> $GITHUB_OUTPUT
+            echo "location=westus" >> $GITHUB_OUTPUT
+          else
+            echo "env_name=dev" >> $GITHUB_OUTPUT
+            echo "resource_group=rg-fraud-detection-dev" >> $GITHUB_OUTPUT
+            echo "location=eastus" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Resource Group
+        run: |
+          az group create \
+            --name ${{ steps.vars.outputs.resource_group }} \
+            --location ${{ steps.vars.outputs.location }}
+
+      - name: Deploy Bicep template
+        run: |
+          az deployment group create \
+            --resource-group ${{ steps.vars.outputs.resource_group }} \
+            --template-file iac/main.bicep \
+            --parameters \
+              environmentName=${{ steps.vars.outputs.env_name }} \
+              resourceGroupName=${{ steps.vars.outputs.resource_group }} \
+              location=${{ steps.vars.outputs.location }} \
+              containerRegistryName=acr${{ steps.vars.outputs.env_name }}frauddetection \
+              containerAppsEnvironmentName=cae-fraud-detection-${{ steps.vars.outputs.env_name }} \
+              backendAppName=app-backend-${{ steps.vars.outputs.env_name }} \
+              frontendAppName=app-frontend-${{ steps.vars.outputs.env_name }} \
+              keyVaultName=kv-frauddetection-${{ steps.vars.outputs.env_name }} \
+              logAnalyticsName=law-fraud-detection-${{ steps.vars.outputs.env_name }} \
+              appInsightsName=ai-fraud-detection-${{ steps.vars.outputs.env_name }}
+
+      - name: Get deployment outputs
+        id: deployment
+        run: |
+          outputs=$(az deployment group show \
+            --resource-group ${{ steps.vars.outputs.resource_group }} \
+            --name main \
+            --query properties.outputs)
+          echo "outputs=$outputs" >> $GITHUB_OUTPUT
+
+      - name: Push images to ACR
+        run: |
+          # Get ACR login credentials
+          acr_name=$(echo '${{ steps.deployment.outputs.outputs }}' | jq -r '.containerRegistryLoginServer.value' | cut -d'.' -f1)
+          az acr login --name $acr_name
+          
+          # Log in to GitHub Container Registry
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          
+          # Pull and push backend image
+          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/backend:main
+          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/backend:main \
+                     $(echo '${{ steps.deployment.outputs.outputs }}' | jq -r '.containerRegistryLoginServer.value')/secure-ml-backend:latest
+          docker push $(echo '${{ steps.deployment.outputs.outputs }}' | jq -r '.containerRegistryLoginServer.value')/secure-ml-backend:latest
+          
+          # Pull and push frontend image
+          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/frontend:main
+          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/frontend:main \
+                     $(echo '${{ steps.deployment.outputs.outputs }}' | jq -r '.containerRegistryLoginServer.value')/secure-ml-frontend:latest
+          docker push $(echo '${{ steps.deployment.outputs.outputs }}' | jq -r '.containerRegistryLoginServer.value')/secure-ml-frontend:latest
+
+      - name: Update Container App secrets
+        run: |
+          acr_name=$(echo '${{ steps.deployment.outputs.outputs }}' | jq -r '.containerRegistryLoginServer.value' | cut -d'.' -f1)
+          resource_group=${{ steps.vars.outputs.resource_group }}
+          backend_app=app-backend-${{ steps.vars.outputs.env_name }}
+          
+          az containerapp secret set \
+            --name $backend_app \
+            --resource-group $resource_group \
+            --secrets jwt-secret-key=${{ secrets.JWT_SECRET_KEY }} \
+                     api-key=${{ secrets.API_KEY }} \
+                     encryption-key=${{ secrets.ENCRYPTION_KEY }}
+
+      - name: Create deployment summary
+        run: |
+          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** ${{ steps.vars.outputs.env_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Resource Group:** ${{ steps.vars.outputs.resource_group }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Location:** ${{ steps.vars.outputs.location }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Frontend URL:** $(echo '${{ steps.deployment.outputs.outputs }}' | jq -r '.frontendAppFqdn.value')" >> $GITHUB_STEP_SUMMARY
+          echo "**Backend URL:** $(echo '${{ steps.deployment.outputs.outputs }}' | jq -r '.backendAppFqdn.value')" >> $GITHUB_STEP_SUMMARY
+          echo "**Key Vault:** $(echo '${{ steps.deployment.outputs.outputs }}' | jq -r '.keyVaultUri.value')" >> $GITHUB_STEP_SUMMARY

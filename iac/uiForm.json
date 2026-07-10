@@ -1,0 +1,118 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2021-09-09/uiFormDefinition.schema.json",
+  "view": {
+    "kind": "Form",
+    "properties": {
+      "title": "Secure ML Fraud Detection Pipeline",
+      "steps": [
+        {
+          "name": "basics",
+          "label": "Basics",
+          "elements": [
+            {
+              "name": "resourceScope",
+              "type": "Microsoft.Common.ResourceScope",
+              "location": {
+                "resourceTypes": [
+                  "Microsoft.ContainerRegistry/registries"
+                ]
+              }
+            },
+            {
+              "name": "environmentName",
+              "type": "Microsoft.Common.TextBox",
+              "label": "Environment Name",
+              "defaultValue": "prod",
+              "toolTip": "Environment name for resource naming (e.g., 'prod', 'staging', 'dev')",
+              "constraints": {
+                "required": true,
+                "regex": "^[a-z0-9]{3,10}$",
+                "validationMessage": "Must be 3-10 lowercase alphanumeric characters"
+              }
+            }
+          ]
+        },
+        {
+          "name": "resources",
+          "label": "Resources",
+          "elements": [
+            {
+              "name": "containerRegistryName",
+              "type": "Microsoft.Common.TextBox",
+              "label": "Container Registry Name",
+              "defaultValue": "acrfrauddetection",
+              "toolTip": "Must be globally unique, 5-50 alphanumeric characters",
+              "constraints": {
+                "required": true,
+                "regex": "^[a-z0-9]{5,50}$",
+                "validationMessage": "Must be 5-50 lowercase alphanumeric characters"
+              }
+            },
+            {
+              "name": "containerAppsEnvironmentName",
+              "type": "Microsoft.Common.TextBox",
+              "label": "Container Apps Environment Name",
+              "defaultValue": "cae-fraud-detection",
+              "toolTip": "Name for the Container Apps Environment",
+              "constraints": {
+                "required": true
+              }
+            },
+            {
+              "name": "backendAppName",
+              "type": "Microsoft.Common.TextBox",
+              "label": "Backend App Name",
+              "defaultValue": "app-backend-fraud-detection",
+              "toolTip": "Name for the backend container app",
+              "constraints": {
+                "required": true
+              }
+            },
+            {
+              "name": "frontendAppName",
+              "type": "Microsoft.Common.TextBox",
+              "label": "Frontend App Name",
+              "defaultValue": "app-frontend-fraud-detection",
+              "toolTip": "Name for the frontend container app",
+              "constraints": {
+                "required": true
+              }
+            },
+            {
+              "name": "keyVaultName",
+              "type": "Microsoft.Common.TextBox",
+              "label": "Key Vault Name",
+              "defaultValue": "kv-frauddetection",
+              "toolTip": "Must be globally unique, 3-24 alphanumeric characters and hyphens",
+              "constraints": {
+                "required": true,
+                "regex": "^[a-z0-9-]{3,24}$",
+                "validationMessage": "Must be 3-24 alphanumeric characters and hyphens, start with letter"
+              }
+            },
+            {
+              "name": "logAnalyticsName",
+              "type": "Microsoft.Common.TextBox",
+              "label": "Log Analytics Workspace Name",
+              "defaultValue": "law-fraud-detection",
+              "toolTip": "Name for Log Analytics Workspace",
+              "constraints": {
+                "required": true
+              }
+            },
+            {
+              "name": "appInsightsName",
+              "type": "Microsoft.Common.TextBox",
+              "label": "Application Insights Name",
+              "defaultValue": "ai-fraud-detection",
+              "toolTip": "Name for Application Insights resource",
+              "constraints": {
+                "required": true
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

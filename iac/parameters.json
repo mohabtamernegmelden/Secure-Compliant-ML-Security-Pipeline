@@ -1,0 +1,48 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "environmentName": {
+      "value": "prod"
+    },
+    "resourceGroupName": {
+      "value": "rg-fraud-detection"
+    },
+    "location": {
+      "value": "eastus"
+    },
+    "containerRegistryName": {
+      "value": "acrfrauddetection"
+    },
+    "containerAppsEnvironmentName": {
+      "value": "cae-fraud-detection"
+    },
+    "backendAppName": {
+      "value": "app-backend-fraud-detection"
+    },
+    "frontendAppName": {
+      "value": "app-frontend-fraud-detection"
+    },
+    "keyVaultName": {
+      "value": "kv-frauddetection"
+    },
+    "logAnalyticsName": {
+      "value": "law-fraud-detection"
+    },
+    "appInsightsName": {
+      "value": "ai-fraud-detection"
+    },
+    "backendImageUri": {
+      "value": ""
+    },
+    "frontendImageUri": {
+      "value": ""
+    },
+    "backendPort": {
+      "value": 8000
+    },
+    "frontendPort": {
+      "value": 80
+    }
+  }
+}

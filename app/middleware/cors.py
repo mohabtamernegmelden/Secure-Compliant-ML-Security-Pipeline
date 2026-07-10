@@ -10,10 +10,15 @@ def setup_cors(app: FastAPI) -> None:
     if settings.ENVIRONMENT == "production":
         # In production, specify exact allowed origins.
         # Avoid wildcard '*' in regulated banking/healthcare environments.
+        # Include frontend URL from environment variable
+        import os
+        frontend_url = os.getenv("FRONTEND_URL", "")
         allowed_origins = [
             "https://portal.mybank.secure",
             "https://api.mybank.secure"
         ]
+        if frontend_url:
+            allowed_origins.append(frontend_url)
         allow_credentials = True
     else:
         # Development allow local hosts
@@ -22,7 +27,10 @@ def setup_cors(app: FastAPI) -> None:
             "http://localhost:8000",
             "http://localhost:3000",
             "http://127.0.0.1",
-            "http://127.0.0.1:8000"
+            "http://127.0.0.1:8000",
+            "http://127.0.0.1:3000",
+            "http://frontend:80",
+            "http://frontend"
         ]
         allow_credentials = True
 
